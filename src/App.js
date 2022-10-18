@@ -1,45 +1,37 @@
+import { useEffect } from 'react';
 import { Col } from 'antd';
-import Search from './components/Searcher';
+import { useDispatch, useSelector } from 'react-redux';
+import Searcher from './components/Searcher';
 import PokemonList from './components/PokemonList';
-import logo from './statics/logo.svg';
-import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { setPokemons as setPokemonsActions } from './actions';
 import { getPokemon } from './api';
-
+import { setPokemons } from './actions';
+import logo from './statics/logo.svg';
 import './App.css';
 
+function App() {
+  const pokemons = useSelector(state =>   state.pokemons);
+  const dispatch = useDispatch();
 
-function App({pokemons, setPokemons}) {
-  console.log(pokemons);
   useEffect(() => {
-    const fecthPokemon = async () =>  {
-      const pokemonsRest = await getPokemon();
-      setPokemons(pokemonsRest);
+    const fetchPokemons = async () => {
+      const pokemonsRes = await getPokemon();
+      dispatch(setPokemons(pokemonsRes));
     };
-    fecthPokemon();
+
+    fetchPokemons();
   }, []);
 
   return (
-    <div className="App">
-      <Col span={4} offset={ 10 }>
-        <img src={logo} alt= 'pokedux'/>
+    <div className='App'>
+      <Col span={4} offset={10}>
+        <img src={logo} alt='Pokedux' />
       </Col>
       <Col span={8} offset={8}>
-        <Search />
+        <Searcher />
       </Col>
-      <PokemonList pokemons={pokemons}  />
+      <PokemonList pokemons={pokemons} />
     </div>
   );
-};
+}
 
-
-const mapStateProps = (state) => ({
-  pokemons: state.pokemons,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  setPokemons: (value) => dispatch(setPokemonsActions(value)),
-});
-
-export default connect(mapStateProps, mapDispatchToProps) (App);
+export default App;
